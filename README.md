@@ -2,8 +2,8 @@
 # SOEN 342 
 
 ### Contributors:
-- **[Student 1 Name]**  
-  Student ID: [Student 1 ID]
+- **Benjamin Ho**  
+  Student ID: 40249917
 
-- **[Student 2 Name]**  
-  Student ID: [Student 2 ID]
+- **Samuel Henderson**  
+  Student ID: 40248526
