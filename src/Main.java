@@ -6,8 +6,6 @@ public class Main {
     User credentials
     ------------------
     Admin --> email: admin, password: test123
-    Expert --> email: expert@gmail.com, password: test123
-    Client --> email: client@gmail.com, password: test123
      */
 
     private static final Scanner scanner = new Scanner(System.in);
