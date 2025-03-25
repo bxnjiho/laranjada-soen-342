@@ -1,0 +1,15 @@
+# Ignore compiled class files
+*.class
+
+# Ignore bin and target build folders
+/bin/
+/target/
+
+# Ignore environment files
+.env
+
+# Ignore logs
+*.log
+
+# VS Code settings
+.vscode/
