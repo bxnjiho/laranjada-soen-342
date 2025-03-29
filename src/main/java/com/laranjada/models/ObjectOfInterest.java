@@ -1,3 +1,4 @@
+package com.laranjada.models;
 public class ObjectOfInterest {
     private String description;
     private boolean ownedByInstitution;
@@ -8,6 +9,19 @@ public class ObjectOfInterest {
         this.description = description;
         this.ownedByInstitution = ownedByInstitution;
         this.auctioned = auctioned;
+    }
+
+    // Getters
+    public String getDescription() {
+        return description;
+    }
+
+    public boolean isOwnedByInstitution() {
+        return ownedByInstitution;
+    }
+
+    public boolean isAuctioned() {
+        return auctioned;
     }
 
     @Override

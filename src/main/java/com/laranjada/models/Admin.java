@@ -1,15 +1,22 @@
-import java.util.*;
+package com.laranjada.models;
+
+import com.laranjada.dao.ClientDAO;
+import com.laranjada.dao.ExpertDAO;
+import com.laranjada.dao.ObjectOfInterestDAO;
+
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Scanner;
 
 public class Admin extends User {
 
     private static final Scanner scanner = new Scanner(System.in);
 
-    // Constructor
     public Admin(String email, String password, String firstName, String lastName) {
         super(email, password, firstName, lastName);
     }
 
-    public void adminMenu(Map<String, User> users, List<ObjectOfInterest> objectsOfInterest) {
+    public void adminMenu() {
         while (true) {
             System.out.println("\n--- Admin Menu ---");
             System.out.println("1. Approve Clients");
@@ -24,16 +31,16 @@ public class Admin extends User {
 
             switch (choice) {
                 case 1:
-                    approveClients(users);
+                    approveClients();
                     break;
                 case 2:
-                    registerExpert(users);
+                    registerExpert();
                     break;
                 case 3:
-                    createObjectOfInterest(objectsOfInterest);
+                    createObjectOfInterest();
                     break;
                 case 4:
-                    viewObjectsOfInterest(objectsOfInterest);
+                    viewObjectsOfInterest();
                     break;
                 case 5:
                     System.out.println("Admin logged out.");
@@ -44,40 +51,47 @@ public class Admin extends User {
         }
     }
 
-    private void approveClients(Map<String, User> users) {
+    private void approveClients() {
         System.out.println("\n--- Approve Clients ---");
+        try {
+            List<Client> pendingClients = ClientDAO.getUnapprovedClients();
+            if (pendingClients.isEmpty()) {
+                System.out.println("No clients awaiting approval.");
+                return;
+            }
 
-        boolean found = false;
-        for (User user : users.values()) {
-            if (user instanceof Client) {
-                Client client = (Client) user;
-                if (!client.isAccountApproved()) {
-                    System.out.println("Client: " + client.getEmail());
-                    System.out.print("Approve this client? (yes/no): ");
-                    String input = scanner.nextLine();
+            for (Client client : pendingClients) {
+                System.out.println("Client: " + client.getEmail());
+                System.out.print("Approve this client? (yes/no): ");
+                String input = scanner.nextLine();
 
-                    if (input.equalsIgnoreCase("yes")) {
-                        client.setAccountApproved(true);
-                        System.out.println(client.getEmail() + " has been approved!");
-                    }
-                    found = true;
+                if (input.equalsIgnoreCase("yes")) {
+                    client.setAccountApproved(true);
+                    ClientDAO.updateClientApproval(client.getEmail(), true);
+                    System.out.println(client.getEmail() + " has been approved!");
                 }
             }
-        }
 
-        if (!found) {
-            System.out.println("No clients awaiting approval.");
+        } catch (SQLException e) {
+            System.out.println("Error fetching clients from database.");
+            e.printStackTrace();
         }
     }
 
-    private void registerExpert(Map<String, User> users) {
+    private void registerExpert() {
         System.out.println("\n--- Register Expert ---");
 
         System.out.print("Enter expert email: ");
         String email = scanner.nextLine();
 
-        if (users.containsKey(email)) {
-            System.out.println("Email is already registered.");
+        try {
+            if (ExpertDAO.getExpertByEmail(email) != null) {
+                System.out.println("Email is already registered.");
+                return;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error checking existing expert.");
+            e.printStackTrace();
             return;
         }
 
@@ -86,7 +100,7 @@ public class Admin extends User {
         System.out.print("Confirm password: ");
         String confirmPassword = scanner.nextLine();
 
-        while(!(password.equals(confirmPassword))) {
+        while (!password.equals(confirmPassword)) {
             System.out.print("Confirm password: ");
             confirmPassword = scanner.nextLine();
         }
@@ -104,12 +118,17 @@ public class Admin extends User {
         String license = scanner.nextLine();
 
         Expert newExpert = new Expert(email, password, firstName, lastName, areasOfExpertise, license);
-        users.put(email, newExpert);
 
-        System.out.println("Expert registered successfully!");
+        try {
+            ExpertDAO.insertExpert(newExpert);
+            System.out.println("Expert registered successfully!");
+        } catch (SQLException e) {
+            System.out.println("Error saving expert to database.");
+            e.printStackTrace();
+        }
     }
 
-    private void createObjectOfInterest(List<ObjectOfInterest> objectsOfInterest) {
+    private void createObjectOfInterest() {
         System.out.println("\n--- Create Object of Interest ---");
 
         System.out.print("Enter description: ");
@@ -122,8 +141,13 @@ public class Admin extends User {
         boolean auctioned = scanner.nextLine().equalsIgnoreCase("yes");
 
         ObjectOfInterest object = new ObjectOfInterest(description, ownedByInstitution, auctioned);
-        objectsOfInterest.add(object);
 
-        System.out.println("Object of Interest created successfully!");
+        try {
+            ObjectOfInterestDAO.insertObject(object);
+            System.out.println("Object of Interest created successfully!");
+        } catch (SQLException e) {
+            System.out.println("Error saving object to database.");
+            e.printStackTrace();
+        }
     }
 }

@@ -1,3 +1,4 @@
+package com.laranjada.models;
 public class Expert extends User {
     private String[] areasOfExpertise;
     private String license;
@@ -7,5 +8,14 @@ public class Expert extends User {
         super(email, password, firstName, lastName);
         this.areasOfExpertise = areasOfExpertise;
         this.license = license;
+    }
+
+    // Getters
+    public String[] getAreasOfExpertise() {
+        return areasOfExpertise;
+    }
+
+    public String getLicenseNumber() {
+        return license;
     }
 }

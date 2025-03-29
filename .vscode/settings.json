@@ -18,7 +18,7 @@
     "[typescriptreact]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
-    "window.zoomLevel": 1,
+    "window.zoomLevel": 0,
     "code-runner.executorMap": {
 
         "javascript": "node",
@@ -78,5 +78,6 @@
         "spwn": "spwn build",
         "pkl": "cd $dir && pkl eval -f yaml $fileName -o $fileNameWithoutExt.yaml",
         "gleam": "gleam run -m $fileNameWithoutExt"
-    }
+    },
+    "java.configuration.updateBuildConfiguration": "interactive"
 }

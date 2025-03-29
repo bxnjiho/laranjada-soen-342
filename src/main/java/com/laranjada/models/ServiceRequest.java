@@ -1,13 +1,15 @@
+package com.laranjada.models;
 import java.util.Date;
+
 public class ServiceRequest {
 
-    String name;
-    Client client;
-    Expert expert;
-    String expertise;
-    String type;
-    Boolean claimed;
-    Date date;
+    private String name;
+    private Client client;
+    private Expert expert;
+    private String expertise;
+    private String type;
+    private Boolean claimed;
+    private Date date;
     
     public ServiceRequest(String name, Client client, String expertise, String type, Date date) {
         this.name = name;
