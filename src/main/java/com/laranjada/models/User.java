@@ -4,6 +4,7 @@ import com.laranjada.dao.AdminDAO;
 import com.laranjada.dao.ClientDAO;
 import com.laranjada.dao.ExpertDAO;
 import com.laranjada.dao.ObjectOfInterestDAO;
+import com.laranjada.dao.AuctionDAO;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -67,7 +68,7 @@ public class User {
                     return;
                 }
                 System.out.println("Client logged in successfully!");
-                userMenu();
+                client.clientMenu(client);
                 return;
             }
 
@@ -126,6 +127,27 @@ public class User {
             }
         } catch (SQLException e) {
             System.out.println("Failed to fetch objects from database.");
+            e.printStackTrace();
+        }
+    }
+
+    
+    public static void viewAuctions() {
+        System.out.println("\n--- Auctions ---");
+
+        try {
+            List<Auction> auctions = AuctionDAO.getAllAuctions();
+
+            if (auctions.isEmpty()) {
+                System.out.println("No auctions available.");
+                return;
+            }
+
+            for (Auction obj : auctions) {
+                System.out.println(obj);
+            }
+        } catch (SQLException e) {
+            System.out.println("Failed to fetch auctions from database.");
             e.printStackTrace();
         }
     }

@@ -1,3 +1,4 @@
+package com.laranjada.models;
 import java.util.Date;
 import java.util.ArrayList;
 public class Auction{
@@ -6,7 +7,7 @@ public class Auction{
     ArrayList<ObjectOfInterest> objectsAuctionned;
     ArrayList<ServiceRequest> serviceRequests;
 
-    public Auction(Date date, String tyoe, ArrayList<ObjectOfInterest> objectsAuctionned, ArrayList<ServiceRequest> serviceRequests){
+    public Auction(Date date, String type, ArrayList<ObjectOfInterest> objectsAuctionned, ArrayList<ServiceRequest> serviceRequests){
         this.date = date;
         this.type = type;
         this.objectsAuctionned = objectsAuctionned;
@@ -21,7 +22,7 @@ public class Auction{
         return type;
     }
 
-    public ArrayList<ObjectOfInterst> getObjectsAuctionned(){
+    public ArrayList<ObjectOfInterest> getObjectsAuctionned(){
         return objectsAuctionned;
     }
 

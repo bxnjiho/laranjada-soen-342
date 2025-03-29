@@ -39,4 +39,24 @@ public class ExpertDAO {
         }
         return null;
     }
+
+    public static Expert getExpertById(int id) throws SQLException {
+        Connection conn = DBConnection.getInstance().getConnection();
+        String sql = "SELECT * FROM experts WHERE id = ?";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setInt(1, id);
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            return new Expert(
+                rs.getString("email"),
+                rs.getString("password"),
+                rs.getString("firstname"),
+                rs.getString("lastname"),
+                rs.getString("areasOfExpertise").split(","),
+                rs.getString("licenseNumber")
+            );
+        }
+        return null;
+    }
 }
