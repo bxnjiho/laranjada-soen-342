@@ -13,7 +13,7 @@ public class ServiceRequestDAO {
         String sql = "INSERT INTO service_requests (name, client_id, expertise, type, claimed, created_at) VALUES (?, ?, ?, ?, ?, ?)";
         PreparedStatement stmt = conn.prepareStatement(sql);
         stmt.setString(1, sr.getName());
-        stmt.setInt(2, sr.getClient().getId()); // assumes getId() exists on Client
+        stmt.setInt(2, sr.getClient().getId()); 
         stmt.setString(3, sr.getExpertise().name());
         stmt.setString(4, sr.getType().name());
         stmt.setBoolean(5, sr.isClaimed());
