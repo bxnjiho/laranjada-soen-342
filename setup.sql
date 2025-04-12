@@ -49,6 +49,58 @@ CREATE TABLE IF NOT EXISTS objects_of_interest (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Create auctions table
+CREATE TABLE IF NOT EXISTS auctions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    date DATE NOT NULL,
+    type VARCHAR(255) NOT NULL,
+    auctionHouse_id INT,
+    FOREIGN KEY (auctionHouse_id) REFERENCES auctionHouses(id)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create auctions-objects table
+CREATE TABLE IF NOT EXISTS auctions_objects (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    auction_id INT NOT NULL,
+    object_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (auction_id) REFERENCES auctions(id),
+    FOREIGN KEY (object_id) REFERENCES objects_of_interest(id)
+);
+
+-- Create service requests table
+CREATE TABLE IF NOT EXISTS service_requests (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    client_id INT NOT NULL,
+    expert_id INT DEFAULT NULL,
+    expertise VARCHAR(50) NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    claimed BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (client_id) REFERENCES clients(id),
+    FOREIGN KEY (expert_id) REFERENCES experts(id)
+);
+
+-- Create auctions-servicerequests table
+CREATE TABLE IF NOT EXISTS auctions_servicerequests (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    auction_id INT NOT NULL,
+    service_request_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (auction_id) REFERENCES auctions(id),
+    FOREIGN KEY (service_request_id) REFERENCES service_requests(id)
+);
+
+-- Create auctionHouses table
+CREATE TABLE IF NOT EXISTS auctionHouses(
+    id INT AUTO_INCREMENT PRIMARY KEY, 
+    name VARCHAR(255) NOT NULL,
+    city VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+
 -- Create DB user (used in env file)
 CREATE USER IF NOT EXISTS 'laranjadauser'@'localhost' IDENTIFIED BY 'laranjadapass';
 

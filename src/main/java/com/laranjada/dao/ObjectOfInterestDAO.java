@@ -1,11 +1,15 @@
 package com.laranjada.dao;
 
-import com.laranjada.models.ObjectOfInterest;
-import com.laranjada.db.DBConnection;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.laranjada.db.DBConnection;
+import com.laranjada.models.ObjectOfInterest;
 
 public class ObjectOfInterestDAO {
 
@@ -36,4 +40,19 @@ public class ObjectOfInterestDAO {
         stmt.setBoolean(3, obj.isAuctioned());
         stmt.executeUpdate();
     }
+
+    public static int getObjectIdByDescription(String description) throws SQLException {
+        Connection conn = DBConnection.getInstance().getConnection();
+        String sql = "SELECT id FROM objects_of_interest WHERE description = ? LIMIT 1";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setString(1, description);
+        ResultSet rs = stmt.executeQuery();
+    
+        if (rs.next()) {
+            return rs.getInt("id");
+        } else {
+            throw new SQLException("Object with description '" + description + "' not found.");
+        }
+    }
+    
 }

@@ -1,12 +1,15 @@
 package com.laranjada.models;
 
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
+import java.util.Scanner;
+
+import com.laranjada.dao.AuctionDAO;
+import com.laranjada.dao.AuctionHouseDAO;
 import com.laranjada.dao.ClientDAO;
 import com.laranjada.dao.ExpertDAO;
 import com.laranjada.dao.ObjectOfInterestDAO;
-
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Scanner;
 
 public class Admin extends User {
 
@@ -23,7 +26,12 @@ public class Admin extends User {
             System.out.println("2. Register an Expert");
             System.out.println("3. Create Object of Interest");
             System.out.println("4. View Objects of Interest");
-            System.out.println("5. Logout");
+            System.out.println("5. Create an Auction House");
+            System.out.println("6. View Auction Houses");
+            System.out.println("7. Create an Auction");
+            System.out.println("8. View Auctions");
+            System.out.println("9. Add an object of interest to an Auction");
+            System.out.println("10. Logout");
             System.out.print("Enter choice: ");
 
             int choice = scanner.nextInt();
@@ -43,6 +51,16 @@ public class Admin extends User {
                     viewObjectsOfInterest();
                     break;
                 case 5:
+                    createAuctionHouse();
+                case 6:
+                    viewAuctionHouse();
+                case 7:
+                    createAuction();
+                case 8:
+                    viewAuctions();
+                case 9:
+                    addObjectOfInterestToAuction();
+                case 10:
                     System.out.println("Admin logged out.");
                     return;
                 default:
@@ -147,6 +165,73 @@ public class Admin extends User {
             System.out.println("Object of Interest created successfully!");
         } catch (SQLException e) {
             System.out.println("Error saving object to database.");
+            e.printStackTrace();
+        }
+    }
+
+    private void createAuction() {
+        System.out.println("\n--- Create Auction ---");
+
+        System.out.print("Enter Date of Auction: (yyyy-MM-dd)");
+        String dateInput = scanner.nextLine();
+        Date date = java.sql.Date.valueOf(dateInput); // works if input is "yyyy-MM-dd"
+
+        System.out.print("Enter Type of Auction");
+        String type = scanner.nextLine();
+
+        System.out.print("Enter what Auction House this auction will be at");
+        String auctionHouse = scanner.nextLine();
+        int auctionHouse_id;
+        try {
+            auctionHouse_id = AuctionHouseDAO.getAuctionHouseIdByName(auctionHouse);
+        } catch (Exception e) {
+            System.out.println("Auction House doesn't exist");
+            e.printStackTrace();
+            return;
+        }
+
+        Auction auction = new Auction(date, type, auctionHouse_id);
+        try {
+            AuctionDAO.insertAuction(auction);
+        } catch (Exception e) {
+            System.out.print("Auction could not be added to the db");
+        }
+        System.out.println("Auction created successfully!");
+    }
+
+    private void addObjectOfInterestToAuction(){
+        System.out.println("\n--- Add Object of Interest ---");
+
+        System.out.print("Enter Name of Auction: ");
+        String name = scanner.nextLine();
+
+        System.out.print("Enter description of Object Of Interest");
+        String description = scanner.nextLine();
+
+        try {
+            AuctionDAO.addObjectToAuction(name, description);
+        } catch (Exception e) {
+            System.out.println("Failed to add Object Of Interest to Auction");
+        }
+
+    }
+
+    private void createAuctionHouse() {
+        System.out.println("\n--- Create Auction House ---");
+
+        System.out.print("Enter Name of Auction House: ");
+        String name = scanner.nextLine();
+
+        System.out.print("Enter City of Auction House");
+        String city = scanner.nextLine();
+
+        AuctionHouse auctionHouse = new AuctionHouse(name, city);
+
+        try {
+            AuctionHouseDAO.insertAuctionHouse(auctionHouse);
+            System.out.println("Auction House created successfully!");
+        } catch (SQLException e) {
+            System.out.println("Error saving auction house to database.");
             e.printStackTrace();
         }
     }

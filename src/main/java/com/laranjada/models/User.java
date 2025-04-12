@@ -1,13 +1,15 @@
 package com.laranjada.models;
 
-import com.laranjada.dao.AdminDAO;
-import com.laranjada.dao.ClientDAO;
-import com.laranjada.dao.ExpertDAO;
-import com.laranjada.dao.ObjectOfInterestDAO;
-
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
+
+import com.laranjada.dao.AdminDAO;
+import com.laranjada.dao.AuctionDAO;
+import com.laranjada.dao.AuctionHouseDAO;
+import com.laranjada.dao.ClientDAO;
+import com.laranjada.dao.ExpertDAO;
+import com.laranjada.dao.ObjectOfInterestDAO;
 
 public class User {
 
@@ -126,6 +128,47 @@ public class User {
             }
         } catch (SQLException e) {
             System.out.println("Failed to fetch objects from database.");
+            e.printStackTrace();
+        }
+    }
+
+    
+    public static void viewAuctions() {
+        System.out.println("\n--- Auctions ---");
+
+        try {
+            List<Auction> auctions = AuctionDAO.getAllAuctions();
+
+            if (auctions.isEmpty()) {
+                System.out.println("No auctions available.");
+                return;
+            }
+
+            for (Auction obj : auctions) {
+                System.out.println(obj);
+            }
+        } catch (SQLException e) {
+            System.out.println("Failed to fetch auctions from database.");
+            e.printStackTrace();
+        }
+    }
+
+    public static void viewAuctionHouse() {
+        System.out.println("\n--- Auction Houses ---");
+
+        try {
+            List<AuctionHouse> auctionHouses = AuctionHouseDAO.getAllAuctionHouses();
+
+            if (auctionHouses.isEmpty()) {
+                System.out.println("No auction Houses created yet.");
+                return;
+            }
+
+            for (AuctionHouse obj : auctionHouses) {
+                System.out.println(obj);
+            }
+        } catch (SQLException e) {
+            System.out.println("Failed to fetch auctions from database.");
             e.printStackTrace();
         }
     }

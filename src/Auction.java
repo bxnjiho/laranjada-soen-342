@@ -1,13 +1,32 @@
-import java.util.Date;
+package com.laranjada.models;
 import java.util.ArrayList;
+import java.util.Date;
 public class Auction{
+    int id;
     Date date;
     String type;
+    int auctionHouse_id;
     ArrayList<ObjectOfInterest> objectsAuctionned;
     ArrayList<ServiceRequest> serviceRequests;
 
-    public Auction(Date date, String tyoe, ArrayList<ObjectOfInterest> objectsAuctionned, ArrayList<ServiceRequest> serviceRequests){
+    public Auction(Date date, String type, int auctionHouse_id){
         this.date = date;
+        this.type = type;
+        this.auctionHouse_id = auctionHouse_id;
+    }
+
+    public Auction(Date date, String type, int auctionHouse_id, ArrayList<ObjectOfInterest> objectsAuctionned, ArrayList<ServiceRequest> serviceRequests){
+        this.date = date;
+        this.type = type;
+        this.auctionHouse_id = auctionHouse_id;
+        this.objectsAuctionned = objectsAuctionned;
+        this.serviceRequests = serviceRequests;
+    }
+
+    public Auction(int id, Date date, String type, int auctionHouse_id, ArrayList<ObjectOfInterest> objectsAuctionned, ArrayList<ServiceRequest> serviceRequests){
+        this.id = id;
+        this.date = date;
+        this.auctionHouse_id = auctionHouse_id;
         this.type = type;
         this.objectsAuctionned = objectsAuctionned;
         this.serviceRequests = serviceRequests;
@@ -21,7 +40,15 @@ public class Auction{
         return type;
     }
 
-    public ArrayList<ObjectOfInterst> getObjectsAuctionned(){
+    public int getId(){
+        return id;
+    }
+
+    public int getAuctionHouseId(){
+        return auctionHouse_id;
+    }
+
+    public ArrayList<ObjectOfInterest> getObjectsAuctionned(){
         return objectsAuctionned;
     }
 
