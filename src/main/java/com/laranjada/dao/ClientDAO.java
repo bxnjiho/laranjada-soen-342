@@ -42,6 +42,26 @@ public class ClientDAO {
         return null;
     }
 
+    public static Client getClientById(int id) throws SQLException {
+        Connection conn = DBConnection.getInstance().getConnection();
+        String sql = "SELECT * FROM clients WHERE id = ?";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setInt(1, id);
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            return new Client(
+                rs.getString("email"),
+                rs.getString("password"),
+                rs.getString("firstname"),
+                rs.getString("lastname"),
+                rs.getString("affiliation"),
+                rs.getBoolean("accountApproved")
+            );
+        }
+        return null;
+    }
+
     public static List<Client> getUnapprovedClients() throws SQLException {
         Connection conn = DBConnection.getInstance().getConnection();
         String sql = "SELECT * FROM clients WHERE accountApproved = false";

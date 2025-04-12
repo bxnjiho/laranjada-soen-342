@@ -69,7 +69,7 @@ public class User {
                     return;
                 }
                 System.out.println("Client logged in successfully!");
-                userMenu();
+                client.clientMenu(client);
                 return;
             }
 

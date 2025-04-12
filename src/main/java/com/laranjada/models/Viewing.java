@@ -1,3 +1,4 @@
+package com.laranjada.models;
 import java.util.*;
 public class Viewing {
     

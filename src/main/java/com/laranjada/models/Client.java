@@ -1,18 +1,34 @@
 package com.laranjada.models;
 
 import com.laranjada.dao.ClientDAO;
+import com.laranjada.dao.AuctionDAO;
+import com.laranjada.dao.ServiceRequestDAO;
+
+import com.laranjada.utils.ExpertiseArea;
+import com.laranjada.utils.Type;
 
 import java.sql.SQLException;
 import java.util.Scanner;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Client extends User {
+    private int id;
     private String affiliation;
     private boolean accountApproved;
     private static final Scanner scanner = new Scanner(System.in);
 
-    // Contructor
+    // Constructor 
     public Client(String email, String password, String firstName, String lastName, String affiliation, boolean accountApproved) {
         super(email, password, firstName, lastName);
+        this.affiliation = affiliation;
+        this.accountApproved = accountApproved;
+    }
+
+    // Contructor with id
+    public Client(int id, String email, String password, String firstName, String lastName, String affiliation, boolean accountApproved) {
+        super(email, password, firstName, lastName);
+        this.id = id;
         this.affiliation = affiliation;
         this.accountApproved = accountApproved;
     }
@@ -24,6 +40,14 @@ public class Client extends User {
 
     public String getAffiliation() {
         return affiliation;
+    }
+
+    public String getFullName() {
+        return getFirstName() + " " + getLastName();
+    }
+
+    public int getId() {
+        return id;
     }
 
     // Setters
@@ -73,4 +97,93 @@ public class Client extends User {
             e.printStackTrace();
         }
     }
+
+    public void clientMenu(Client client) {
+        while (true) {
+            System.out.println("\n--- Client Menu ---");
+            System.out.println("1. View Objects of Interest");
+            System.out.println("2. View Auctions");
+            System.out.println("3. Make Service Request");
+            System.out.println("4. Logout");
+            System.out.print("Enter choice: ");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (choice) {
+                case 1:
+                    viewObjectsOfInterest();
+                    break;
+                case 2:
+                    viewAuctions();
+                    break;
+                case 3:
+                    createServiceRequest(client);
+                    break;
+                case 4:
+                    System.out.println("Client logged out.");
+                    return;
+                default:
+                    System.out.println("Invalid choice. Try again.");
+            }
+        }
+    }
+
+    private static void createServiceRequest(Client client) {
+        System.out.println("\n--- Service Request Form ---");
+
+        String name = client.getFullName() + "'s Service Request";
+
+        System.out.println("Please specify the expertise required for this service request.");
+        System.out.println("Options available: [ART_HISTORY, ANTIQUES, RARE_BOOKS, PAINTINGS, JEWELRY, FURNITURE]");
+        ExpertiseArea expertise = null;
+        while (expertise == null) {
+            System.out.print("Enter expertise: ");
+            String input = scanner.nextLine().toUpperCase();
+
+            try {
+                expertise = ExpertiseArea.valueOf(input);
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid expertise. Please try again.");
+            }
+        }
+        System.out.print("Please specify the type - [ONE, TWO, THREE]: ");
+        Type type = null;
+        while (type == null) {
+            System.out.print("Enter type: ");
+            String input = scanner.nextLine().toUpperCase();
+
+            try {
+                type = Type.valueOf(input);
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid expertise. Please try again.");
+            }
+        }
+
+        System.out.println("Please specify the date (YYYY-MM-DD)");
+        System.out.print("Enter date: ");
+        String dateStr = scanner.nextLine();
+
+        Date date = null;
+        try {
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            date = formatter.parse(dateStr);
+            System.out.println("Parsed date: " + date);
+        } catch (Exception e) {
+            System.out.println("Invalid date format. Please use YYYY-MM-DD.");
+            e.printStackTrace();
+        }
+
+        ServiceRequest serviceRequest = new ServiceRequest(name, client, expertise, type, date);
+
+        try {
+            ServiceRequestDAO.insertServiceRequest(serviceRequest);
+            System.out.println("Service request created successfully.");
+        } catch (SQLException e) {
+            System.out.println("Failed to save service request to the database.");
+            e.printStackTrace();
+        }        
+
+    }
+
 }
