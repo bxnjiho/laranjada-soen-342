@@ -54,8 +54,8 @@ CREATE TABLE IF NOT EXISTS auctions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     date DATE NOT NULL,
     type VARCHAR(255) NOT NULL,
-    auctionHouse_id INT,
-    FOREIGN KEY (auctionHouse_id) REFERENCES auctionHouses(id)
+    auctionHouse_id INT NOT NULL,
+    FOREIGN KEY (auctionHouse_id) REFERENCES auctionHouses(id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS auctionHouses(
     name VARCHAR(255) NOT NULL,
     city VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
+);
 
 -- Create DB user (used in env file)
 CREATE USER IF NOT EXISTS 'laranjadauser'@'localhost' IDENTIFIED BY 'laranjadapass';
