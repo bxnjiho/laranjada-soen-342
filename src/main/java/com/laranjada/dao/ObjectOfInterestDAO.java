@@ -22,6 +22,8 @@ public class ObjectOfInterestDAO {
         List<ObjectOfInterest> objects = new ArrayList<>();
         while (rs.next()) {
             ObjectOfInterest obj = new ObjectOfInterest(
+                rs.getInt("id"),
+                rs.getString("name"),
                 rs.getString("description"),
                 rs.getBoolean("ownedByInstitution"),
                 rs.getBoolean("auctioned")
@@ -33,8 +35,9 @@ public class ObjectOfInterestDAO {
 
     public static void insertObject(ObjectOfInterest obj) throws SQLException {
         Connection conn = DBConnection.getInstance().getConnection();
-        String sql = "INSERT INTO objects_of_interest (description, ownedByInstitution, auctioned) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO objects_of_interest (name, description, ownedByInstitution, auctioned) VALUES (?, ?, ?, ?)";
         PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setString(1, obj.getName());
         stmt.setString(1, obj.getDescription());
         stmt.setBoolean(2, obj.isOwnedByInstitution());
         stmt.setBoolean(3, obj.isAuctioned());

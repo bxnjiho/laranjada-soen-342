@@ -153,14 +153,14 @@ public class User {
         }
     }
 
-    public static void viewAuctionHouse() {
+    public static void viewAuctionHouses() {
         System.out.println("\n--- Auction Houses ---");
 
         try {
             List<AuctionHouse> auctionHouses = AuctionHouseDAO.getAllAuctionHouses();
 
             if (auctionHouses.isEmpty()) {
-                System.out.println("No auction Houses created yet.");
+                System.out.println("No auction houses created yet.");
                 return;
             }
 

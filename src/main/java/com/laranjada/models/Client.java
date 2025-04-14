@@ -12,6 +12,10 @@ import java.util.Scanner;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
 public class Client extends User {
     private int id;
     private String affiliation;
@@ -140,41 +144,48 @@ public class Client extends User {
         while (expertise == null) {
             System.out.print("Enter expertise: ");
             String input = scanner.nextLine().toUpperCase();
-
             try {
                 expertise = ExpertiseArea.valueOf(input);
             } catch (IllegalArgumentException e) {
                 System.out.println("Invalid expertise. Please try again.");
             }
         }
-        System.out.print("Please specify the type - [ONE, TWO, THREE]: ");
+
+        System.out.println("Please specify the type - [ONE, TWO, THREE]:");
         Type type = null;
         while (type == null) {
             System.out.print("Enter type: ");
             String input = scanner.nextLine().toUpperCase();
-
             try {
                 type = Type.valueOf(input);
             } catch (IllegalArgumentException e) {
-                System.out.println("Invalid expertise. Please try again.");
+                System.out.println("Invalid type. Please try again.");
             }
         }
 
-        System.out.println("Please specify the date (YYYY-MM-DD)");
-        System.out.print("Enter date: ");
-        String dateStr = scanner.nextLine();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-        Date date = null;
+        System.out.print("Enter the start date and time (yyyy-MM-dd HH:mm): ");
+        LocalDateTime startDate;
         try {
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-            date = formatter.parse(dateStr);
-            System.out.println("Parsed date: " + date);
-        } catch (Exception e) {
-            System.out.println("Invalid date format. Please use YYYY-MM-DD.");
-            e.printStackTrace();
+            String startStr = scanner.nextLine();
+            startDate = LocalDateTime.parse(startStr, formatter);
+        } catch (DateTimeParseException e) {
+            System.out.println("Invalid start date format. Please use yyyy-MM-dd HH:mm.");
+            return;
         }
 
-        ServiceRequest serviceRequest = new ServiceRequest(name, client, expertise, type, date);
+        System.out.print("Enter the end date and time (yyyy-MM-dd HH:mm): ");
+        LocalDateTime endDate;
+        try {
+            String endStr = scanner.nextLine();
+            endDate = LocalDateTime.parse(endStr, formatter);
+        } catch (DateTimeParseException e) {
+            System.out.println("Invalid end date format. Please use yyyy-MM-dd HH:mm.");
+            return;
+        }
+
+        ServiceRequest serviceRequest = new ServiceRequest(name, client, expertise, type, startDate, endDate);
 
         try {
             ServiceRequestDAO.insertServiceRequest(serviceRequest);
@@ -182,8 +193,8 @@ public class Client extends User {
         } catch (SQLException e) {
             System.out.println("Failed to save service request to the database.");
             e.printStackTrace();
-        }        
-
+        }
     }
+
 
 }

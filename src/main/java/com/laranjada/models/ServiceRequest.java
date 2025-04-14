@@ -1,6 +1,6 @@
 package com.laranjada.models;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import com.laranjada.utils.Type;
 
@@ -14,15 +14,17 @@ public class ServiceRequest {
     private ExpertiseArea expertise;
     private Type type;
     private Boolean claimed;
-    private Date date;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
     
-    public ServiceRequest(String name, Client client, ExpertiseArea expertise, Type type, Date date) {
+    public ServiceRequest(String name, Client client, ExpertiseArea expertise, Type type, LocalDateTime startDate, LocalDateTime endDate) {
         this.name = name;
         this.client = client;
         this.expertise = expertise;
         this.type = type;
         this.claimed = false;
-        this.date = date;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 
     public void setExpert(Expert expert){
@@ -61,8 +63,12 @@ public class ServiceRequest {
         return claimed;
     }
 
-    public Date getDate(){
-        return date;
+    public LocalDateTime getStartDate(){
+        return startDate;
+    }
+
+    public LocalDateTime getEndDate(){
+        return endDate;
     }
 
 }

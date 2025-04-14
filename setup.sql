@@ -43,6 +43,7 @@ VALUES ('admin@example.com', '12345', 'Admin', 'Admin');
 -- Create objects of interest table
 CREATE TABLE IF NOT EXISTS objects_of_interest (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
     ownedByInstitution BOOLEAN DEFAULT FALSE,
     auctioned BOOLEAN DEFAULT FALSE,
@@ -52,8 +53,10 @@ CREATE TABLE IF NOT EXISTS objects_of_interest (
 -- Create auctions table
 CREATE TABLE IF NOT EXISTS auctions (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    date DATE NOT NULL,
+    name VARCHAR(255) NOT NULL,
     type VARCHAR(255) NOT NULL,
+    startDate DATETIME NOT NULL,
+    endDate DATETIME NOT NULL,
     auctionHouse_id INT NOT NULL,
     FOREIGN KEY (auctionHouse_id) REFERENCES auctionHouses(id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

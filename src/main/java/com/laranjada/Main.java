@@ -13,19 +13,10 @@ public class Main {
     /*
     User credentials
     ------------------
-    Admin --> email: admin, password: test123
+    Admin --> email: admin@example.com, password: 12345
      */
 
     private static final Scanner scanner = new Scanner(System.in);
-
-    // // Temporary way to store users
-    // private static final Map<String, User> users = new HashMap<>();
-
-    // //Temporary way to store objects of interest
-    // private static final List<ObjectOfInterest> objectsOfInterest = new ArrayList<>();
-
-    //Predefined admin account
-    // private static final Admin admin = new Admin("admin", "test123", "Admin", "User");
 
     public static void main(String[] args) {
 

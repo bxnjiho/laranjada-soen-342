@@ -1,5 +1,7 @@
 package com.laranjada.models;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
@@ -10,6 +12,9 @@ import com.laranjada.dao.AuctionHouseDAO;
 import com.laranjada.dao.ClientDAO;
 import com.laranjada.dao.ExpertDAO;
 import com.laranjada.dao.ObjectOfInterestDAO;
+
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class Admin extends User {
 
@@ -30,7 +35,7 @@ public class Admin extends User {
             System.out.println("6. View Auction Houses");
             System.out.println("7. Create an Auction");
             System.out.println("8. View Auctions");
-            System.out.println("9. Add an object of interest to an Auction");
+            System.out.println("9. Add an Object of Interest to an Auction");
             System.out.println("10. Logout");
             System.out.print("Enter choice: ");
 
@@ -52,14 +57,19 @@ public class Admin extends User {
                     break;
                 case 5:
                     createAuctionHouse();
+                    break;
                 case 6:
-                    viewAuctionHouse();
+                    viewAuctionHouses();
+                    break;
                 case 7:
                     createAuction();
+                    break;
                 case 8:
                     viewAuctions();
+                    break;
                 case 9:
                     addObjectOfInterestToAuction();
+                    break;
                 case 10:
                     System.out.println("Admin logged out.");
                     return;
@@ -149,6 +159,9 @@ public class Admin extends User {
     private void createObjectOfInterest() {
         System.out.println("\n--- Create Object of Interest ---");
 
+        System.out.print("Enter name: ");
+        String name = scanner.nextLine();
+
         System.out.print("Enter description: ");
         String description = scanner.nextLine();
 
@@ -158,7 +171,7 @@ public class Admin extends User {
         System.out.print("Is this object being auctioned? (yes/no): ");
         boolean auctioned = scanner.nextLine().equalsIgnoreCase("yes");
 
-        ObjectOfInterest object = new ObjectOfInterest(description, ownedByInstitution, auctioned);
+        ObjectOfInterest object = new ObjectOfInterest(name, description, ownedByInstitution, auctioned);
 
         try {
             ObjectOfInterestDAO.insertObject(object);
@@ -169,43 +182,82 @@ public class Admin extends User {
         }
     }
 
-    private void createAuction() {
-        System.out.println("\n--- Create Auction ---");
+    
+private void createAuction() {
+    System.out.println("\n--- Create Auction ---");
 
-        System.out.print("Enter Date of Auction: (yyyy-MM-dd)");
-        String dateInput = scanner.nextLine();
-        Date date = java.sql.Date.valueOf(dateInput); // works if input is "yyyy-MM-dd"
+    System.out.print("Enter name of Auction: ");
+    String name = scanner.nextLine();
 
-        System.out.print("Enter Type of Auction");
-        String type = scanner.nextLine();
+    System.out.print("Enter Type of Auction: ");
+    String type = scanner.nextLine();
 
-        System.out.print("Enter what Auction House this auction will be at");
-        String auctionHouse = scanner.nextLine();
-        int auctionHouse_id;
-        try {
-            auctionHouse_id = AuctionHouseDAO.getAuctionHouseIdByName(auctionHouse);
-        } catch (Exception e) {
-            System.out.println("Auction House doesn't exist");
-            e.printStackTrace();
+    System.out.print("Select the auction house where this auction will take place: ");
+    String auctionHouse = scanner.nextLine();
+
+    int auctionHouse_id;
+    try {
+        auctionHouse_id = AuctionHouseDAO.getAuctionHouseIdByName(auctionHouse);
+    } catch (Exception e) {
+        System.out.println("Auction House doesn't exist");
+        e.printStackTrace();
+        return;
+    }
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+    System.out.print("Enter the start Date and Time of Auction (yyyy-MM-dd HH:mm): ");
+    String startDateInput = scanner.nextLine();
+
+    LocalDateTime startDate;
+    try {
+        startDate = LocalDateTime.parse(startDateInput, formatter);
+    } catch (DateTimeParseException e) {
+        System.out.println("Invalid date format. Please use yyyy-MM-dd HH:mm");
+        return;
+    }
+
+    System.out.print("Enter the end Date and Time of Auction (yyyy-MM-dd HH:mm): ");
+    String endDateInput = scanner.nextLine();
+
+    LocalDateTime endDate;
+    try {
+        endDate = LocalDateTime.parse(endDateInput, formatter);
+    } catch (DateTimeParseException e) {
+        System.out.println("Invalid date format. Please use yyyy-MM-dd HH:mm");
+        return;
+    }
+
+    try {
+        if (AuctionDAO.isAuctionDateTaken(startDate, endDate, auctionHouse_id)) {
+            System.out.println("An auction is already scheduled at that time in this auction house.");
             return;
         }
-
-        Auction auction = new Auction(date, type, auctionHouse_id);
-        try {
-            AuctionDAO.insertAuction(auction);
-        } catch (Exception e) {
-            System.out.print("Auction could not be added to the db");
-        }
-        System.out.println("Auction created successfully!");
+    } catch (SQLException e) {
+        System.out.println("Error checking for auction conflicts.");
+        e.printStackTrace();
+        return;
     }
+
+    Auction auction = new Auction(name, startDate, endDate, type, auctionHouse_id);
+    try {
+        AuctionDAO.insertAuction(auction);
+    } catch (Exception e) {
+        System.out.println("Auction could not be added to the DB");
+        e.printStackTrace();
+        return;
+    }
+
+    System.out.println("Auction created successfully!");
+}
 
     private void addObjectOfInterestToAuction(){
         System.out.println("\n--- Add Object of Interest ---");
 
-        System.out.print("Enter Name of Auction: ");
+        System.out.print("Enter the name of the Auction: ");
         String name = scanner.nextLine();
 
-        System.out.print("Enter description of Object Of Interest");
+        System.out.print("Enter the description of the Object Of Interest: ");
         String description = scanner.nextLine();
 
         try {
@@ -222,7 +274,7 @@ public class Admin extends User {
         System.out.print("Enter Name of Auction House: ");
         String name = scanner.nextLine();
 
-        System.out.print("Enter City of Auction House");
+        System.out.print("Enter City of Auction House: ");
         String city = scanner.nextLine();
 
         AuctionHouse auctionHouse = new AuctionHouse(name, city);
