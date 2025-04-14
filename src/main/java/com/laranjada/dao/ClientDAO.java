@@ -1,11 +1,14 @@
 package com.laranjada.dao;
 
-import com.laranjada.models.Client;
-import com.laranjada.db.DBConnection;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.laranjada.db.DBConnection;
+import com.laranjada.models.Client;
 
 public class ClientDAO {
 
@@ -26,11 +29,12 @@ public class ClientDAO {
         Connection conn = DBConnection.getInstance().getConnection();
         String sql = "SELECT * FROM clients WHERE email = ?";
         PreparedStatement stmt = conn.prepareStatement(sql);
-        stmt.setString(1, email);
+        stmt.setString(1, email.trim().toLowerCase()); // 🔧 strip + normalize
         ResultSet rs = stmt.executeQuery();
-
+    
         if (rs.next()) {
             return new Client(
+                rs.getInt("id"),
                 rs.getString("email"),
                 rs.getString("password"),
                 rs.getString("firstname"),
@@ -41,6 +45,7 @@ public class ClientDAO {
         }
         return null;
     }
+    
 
     public static Client getClientById(int id) throws SQLException {
         Connection conn = DBConnection.getInstance().getConnection();

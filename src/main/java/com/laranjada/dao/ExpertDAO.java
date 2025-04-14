@@ -1,9 +1,16 @@
 package com.laranjada.dao;
 
-import com.laranjada.models.Expert;
-import com.laranjada.db.DBConnection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
-import java.sql.*;
+import com.laranjada.db.DBConnection;
+import com.laranjada.models.Availability;
+import com.laranjada.models.Expert;
+
 
 public class ExpertDAO {
 
@@ -27,16 +34,25 @@ public class ExpertDAO {
         stmt.setString(1, email);
         ResultSet rs = stmt.executeQuery();
 
-        if (rs.next()) {
-            return new Expert(
-                rs.getString("email"),
-                rs.getString("password"),
-                rs.getString("firstname"),
-                rs.getString("lastname"),
-                rs.getString("areasOfExpertise").split(","),
-                rs.getString("licenseNumber")
-            );
+    if (rs.next()) {
+        Expert expert = new Expert(
+            rs.getInt("id"), 
+            rs.getString("email"),
+            rs.getString("password"),
+            rs.getString("firstname"),
+            rs.getString("lastname"),
+            rs.getString("areasOfExpertise").split(","),
+            rs.getString("licenseNumber")
+        );
+
+        List<Availability> availabilities = AvailabilitiesDAO.getAvailabilitiesByExpertId(expert.getId());
+        for (Availability a : availabilities) {
+            expert.addAvailability(a); 
         }
+
+        return expert;
+    }
+
         return null;
     }
 
@@ -48,7 +64,8 @@ public class ExpertDAO {
         ResultSet rs = stmt.executeQuery();
 
         if (rs.next()) {
-            return new Expert(
+            Expert expert = new Expert(
+                rs.getInt("id"), // Needed to fetch availabilities!
                 rs.getString("email"),
                 rs.getString("password"),
                 rs.getString("firstname"),
@@ -56,7 +73,50 @@ public class ExpertDAO {
                 rs.getString("areasOfExpertise").split(","),
                 rs.getString("licenseNumber")
             );
+    
+            List<Availability> availabilities = AvailabilitiesDAO.getAvailabilitiesByExpertId(expert.getId());
+            for (Availability a : availabilities) {
+                expert.addAvailability(a); // You need this method in Expert class
+            }
+    
+            return expert;
         }
         return null;
     }
+
+    public static List<Expert> getAllExperts() throws SQLException {
+        List<Expert> experts = new ArrayList<>();
+    
+        Connection conn = DBConnection.getInstance().getConnection();
+        String sql = "SELECT * FROM experts";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery();
+    
+        // STEP 1: Build expert objects first
+        while (rs.next()) {
+            Expert expert = new Expert(
+                rs.getInt("id"),
+                rs.getString("email"),
+                rs.getString("password"),
+                rs.getString("firstname"),
+                rs.getString("lastname"),
+                rs.getString("areasOfExpertise").split(","),
+                rs.getString("licenseNumber")
+            );
+    
+            experts.add(expert);
+        }
+    
+        rs.close(); // close result set before any nested SQL calls
+        stmt.close(); // also safe to close statement
+    
+        // STEP 2: Load availabilities afterward
+        for (Expert expert : experts) {
+            List<Availability> availabilities = AvailabilitiesDAO.getAvailabilitiesByExpertId(expert.getId());
+            expert.setAvailabilities(new ArrayList<>(availabilities));
+        }
+    
+        return experts;
+    }
+    
 }

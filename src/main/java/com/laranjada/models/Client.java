@@ -1,20 +1,18 @@
 package com.laranjada.models;
 
-import com.laranjada.dao.ClientDAO;
-import com.laranjada.dao.AuctionDAO;
-import com.laranjada.dao.ServiceRequestDAO;
-
-import com.laranjada.utils.ExpertiseArea;
-import com.laranjada.utils.Type;
-
 import java.sql.SQLException;
-import java.util.Scanner;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.List;
+import java.util.Scanner;
+
+import com.laranjada.dao.AvailabilitiesDAO;
+import com.laranjada.dao.ClientDAO;
+import com.laranjada.dao.ExpertDAO;
+import com.laranjada.dao.ServiceRequestDAO;
+import com.laranjada.utils.ExpertiseArea;
+import com.laranjada.utils.Type;
 
 public class Client extends User {
     private int id;
@@ -133,6 +131,32 @@ public class Client extends User {
         }
     }
 
+    
+    public static int getMatchingExpertId(LocalDateTime start, LocalDateTime end, ExpertiseArea requiredExpertise) throws SQLException {
+        List<Expert> experts = ExpertDAO.getAllExperts();
+
+        for (Expert expert : experts) {
+            // Check if the expert has the required expertise
+            for (String expertiseStr : expert.getAreasOfExpertise()) {
+                if (expertiseStr.equalsIgnoreCase(requiredExpertise.name())) {
+
+                    // Check their availabilities
+                    List<Availability> availabilities = AvailabilitiesDAO.getAvailabilitiesByExpertId(expert.getId());
+                    for (Availability a : availabilities) {
+                        boolean fullyAvailable =
+                            !a.getStart().isAfter(start) && !a.getEnd().isBefore(end);
+
+                        if (fullyAvailable) {
+                            return expert.getId(); // ✅ Match found
+                        }
+                    }
+                }
+            }
+        }
+
+        return -1; // ❌ No expert found with matching expertise + availability
+    }
+
     private static void createServiceRequest(Client client) {
         System.out.println("\n--- Service Request Form ---");
 
@@ -185,11 +209,12 @@ public class Client extends User {
             return;
         }
 
+
+
         ServiceRequest serviceRequest = new ServiceRequest(name, client, expertise, type, startDate, endDate);
 
         try {
             ServiceRequestDAO.insertServiceRequest(serviceRequest);
-            System.out.println("Service request created successfully.");
         } catch (SQLException e) {
             System.out.println("Failed to save service request to the database.");
             e.printStackTrace();

@@ -50,6 +50,14 @@ CREATE TABLE IF NOT EXISTS objects_of_interest (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Create auctionHouses table
+CREATE TABLE IF NOT EXISTS auctionHouses(
+    id INT AUTO_INCREMENT PRIMARY KEY, 
+    name VARCHAR(255) NOT NULL,
+    city VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Create auctions table
 CREATE TABLE IF NOT EXISTS auctions (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -80,7 +88,8 @@ CREATE TABLE IF NOT EXISTS service_requests (
     expert_id INT DEFAULT NULL,
     expertise VARCHAR(50) NOT NULL,
     type VARCHAR(50) NOT NULL,
-    claimed BOOLEAN DEFAULT FALSE,
+    startDate DATETIME NOT NULL,
+    endDate DATETIME NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (client_id) REFERENCES clients(id),
     FOREIGN KEY (expert_id) REFERENCES experts(id)
@@ -96,12 +105,13 @@ CREATE TABLE IF NOT EXISTS auctions_servicerequests (
     FOREIGN KEY (service_request_id) REFERENCES service_requests(id)
 );
 
--- Create auctionHouses table
-CREATE TABLE IF NOT EXISTS auctionHouses(
+-- Create availabilities table
+CREATE TABLE IF NOT EXISTS availabilities(
     id INT AUTO_INCREMENT PRIMARY KEY, 
-    name VARCHAR(255) NOT NULL,
-    city VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    expert_id INT NOT NULL,
+    startDate DATETIME NOT NULL,
+    endDate DATETIME NOT NULL,
+    FOREIGN KEY (expert_id) REFERENCES experts(id)
 );
 
 -- Create DB user (used in env file)

@@ -77,7 +77,7 @@ public class User {
             Expert expert = ExpertDAO.getExpertByEmail(email);
             if (expert != null && expert.getPassword().equals(password)) {
                 System.out.println("Expert logged in successfully!");
-                userMenu();
+                expert.expertMenu(expert);
                 return;
             }
 

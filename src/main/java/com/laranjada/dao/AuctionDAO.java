@@ -5,8 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.laranjada.db.DBConnection;
@@ -17,8 +18,6 @@ import com.laranjada.models.ObjectOfInterest;
 import com.laranjada.models.ServiceRequest;
 import com.laranjada.utils.ExpertiseArea;
 import com.laranjada.utils.Type;
-
-import java.sql.Timestamp;
 
 
 public class AuctionDAO {
@@ -99,7 +98,6 @@ public class AuctionDAO {
             int expertId = rs.getInt("expert_id");
             ExpertiseArea expertise = ExpertiseArea.valueOf(rs.getString("expertise"));
             Type type = Type.valueOf("type");
-            boolean claimed = rs.getBoolean("claimed");
             LocalDateTime startDate = rs.getTimestamp("startDate").toLocalDateTime();
             LocalDateTime endDate = rs.getTimestamp("endDate").toLocalDateTime();
             // You'll need to implement these methods if they don't exist
@@ -107,7 +105,6 @@ public class AuctionDAO {
             Expert expert = ExpertDAO.getExpertById(expertId);
     
             ServiceRequest sr = new ServiceRequest(name, client, expertise, type, startDate, endDate);
-            sr.setClaimed(claimed);
     
             requests.add(sr);
         }
