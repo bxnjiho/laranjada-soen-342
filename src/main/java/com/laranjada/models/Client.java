@@ -136,25 +136,23 @@ public class Client extends User {
         List<Expert> experts = ExpertDAO.getAllExperts();
 
         for (Expert expert : experts) {
-            // Check if the expert has the required expertise
             for (String expertiseStr : expert.getAreasOfExpertise()) {
                 if (expertiseStr.equalsIgnoreCase(requiredExpertise.name())) {
 
-                    // Check their availabilities
                     List<Availability> availabilities = AvailabilitiesDAO.getAvailabilitiesByExpertId(expert.getId());
                     for (Availability a : availabilities) {
                         boolean fullyAvailable =
                             !a.getStart().isAfter(start) && !a.getEnd().isBefore(end);
 
                         if (fullyAvailable) {
-                            return expert.getId(); // ✅ Match found
+                            return expert.getId(); 
                         }
                     }
                 }
             }
         }
 
-        return -1; // ❌ No expert found with matching expertise + availability
+        return -1; 
     }
 
     private static void createServiceRequest(Client client) {
