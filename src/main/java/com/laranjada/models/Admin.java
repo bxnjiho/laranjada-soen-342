@@ -1,20 +1,18 @@
 package com.laranjada.models;
 
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.sql.SQLException;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
 import com.laranjada.dao.AuctionDAO;
 import com.laranjada.dao.AuctionHouseDAO;
+import com.laranjada.dao.AvailabilitiesDAO;
 import com.laranjada.dao.ClientDAO;
 import com.laranjada.dao.ExpertDAO;
 import com.laranjada.dao.ObjectOfInterestDAO;
-
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 
 public class Admin extends User {
 
@@ -36,7 +34,8 @@ public class Admin extends User {
             System.out.println("7. Create an Auction");
             System.out.println("8. View Auctions");
             System.out.println("9. Add an Object of Interest to an Auction");
-            System.out.println("10. Logout");
+            System.out.println("10. Add availabilities to expert");
+            System.out.println("11. Logout");
             System.out.print("Enter choice: ");
 
             int choice = scanner.nextInt();
@@ -71,6 +70,9 @@ public class Admin extends User {
                     addObjectOfInterestToAuction();
                     break;
                 case 10:
+                    addExpertAvailability();
+                    break;
+                case 11:
                     System.out.println("Admin logged out.");
                     return;
                 default:
@@ -287,4 +289,47 @@ private void createAuction() {
             e.printStackTrace();
         }
     }
+
+    private static void addExpertAvailability() {
+        System.out.println("\n--- Add Expert Availability ---");
+    
+        System.out.print("Enter Expert ID: ");
+        int expertId = Integer.parseInt(scanner.nextLine());
+    
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    
+        System.out.print("Enter Start DateTime (yyyy-MM-dd HH:mm): ");
+        String startInput = scanner.nextLine();
+    
+        LocalDateTime start;
+        try {
+            start = LocalDateTime.parse(startInput, formatter);
+        } catch (DateTimeParseException e) {
+            System.out.println("Invalid format. Please use: yyyy-MM-dd HH:mm");
+            return;
+        }
+    
+        System.out.print("Enter End DateTime (yyyy-MM-dd HH:mm): ");
+        String endInput = scanner.nextLine();
+    
+        LocalDateTime end;
+        try {
+            end = LocalDateTime.parse(endInput, formatter);
+        } catch (DateTimeParseException e) {
+            System.out.println("Invalid format. Please use: yyyy-MM-dd HH:mm");
+            return;
+        }
+    
+        Availability availability = new Availability(expertId, start, end);
+    
+        try {
+            AvailabilitiesDAO.insertAvailability(availability);
+            System.out.println("Availability added!");
+        } catch (SQLException e) {
+            System.out.println("Error saving availability to database.");
+            e.printStackTrace();
+        }
+    }
+    
+    
 }

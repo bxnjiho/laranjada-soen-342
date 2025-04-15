@@ -38,9 +38,9 @@ public class ObjectOfInterestDAO {
         String sql = "INSERT INTO objects_of_interest (name, description, ownedByInstitution, auctioned) VALUES (?, ?, ?, ?)";
         PreparedStatement stmt = conn.prepareStatement(sql);
         stmt.setString(1, obj.getName());
-        stmt.setString(1, obj.getDescription());
-        stmt.setBoolean(2, obj.isOwnedByInstitution());
-        stmt.setBoolean(3, obj.isAuctioned());
+        stmt.setString(2, obj.getDescription());
+        stmt.setBoolean(3, obj.isOwnedByInstitution());
+        stmt.setBoolean(4, obj.isAuctioned());
         stmt.executeUpdate();
     }
 

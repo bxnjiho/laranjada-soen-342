@@ -215,6 +215,7 @@ public class Client extends User {
 
         try {
             ServiceRequestDAO.insertServiceRequest(serviceRequest);
+            System.out.println("Service Request saved");
         } catch (SQLException e) {
             System.out.println("Failed to save service request to the database.");
             e.printStackTrace();
